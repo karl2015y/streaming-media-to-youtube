@@ -22,6 +22,23 @@ const getJson = (src, timeout = 5000) => {
 const delay = (ms) => {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
+const showInfo = (text) => {
+    let infoEl = document.querySelector('#infoEl');
+    if (!infoEl) {
+        const body = document.body;
+        infoEl = document.createElement("div");
+        infoEl.id = 'infoEl'
+        infoEl.style = "position: fixed;left: 0;top: 0;width: 100vw;height: 100vh;background-color: #121212e0;display: flex;justify-content: center;align-items: center;z-index: 10;color: white;font-size: 30px;"
+        body.appendChild(infoEl);
+    }
+    infoEl.innerText = text;
+
+}
+const removeInfo = () => {
+    let infoEl = document.querySelector('#infoEl');
+    if (infoEl) infoEl.remove();
+}
+
 class YoutubeInstances {
     videoIds = [];
     serverArray = [];
@@ -114,26 +131,11 @@ class YoutubeInstances {
     }
 
 
-    showInfo(text) {
-        let infoEl = document.querySelector('#infoEl');
-        if (!infoEl) {
-            const body = document.body;
-            infoEl = document.createElement("div");
-            infoEl.id = 'infoEl'
-            infoEl.style = "position: fixed;left: 0;top: 0;width: 100vw;height: 100vh;background-color: #121212e0;display: flex;justify-content: center;align-items: center;z-index: 10;color: white;font-size: 30px;"
-            body.appendChild(infoEl);
-        }
-        infoEl.innerText = text;
 
-    }
-    removeInfo() {
-        let infoEl = document.querySelector('#infoEl');
-        if (infoEl) infoEl.remove();
-    }
     getSongFromInstances = (songNames) => {
         return new Promise(async (resolve, reject) => {
             this.allWithProgress(songNames.map((o) => (this.tryGetYoutubeId(o))), (progress) => {
-                this.showInfo('轉換進度：' + progress + '%');
+                showInfo('轉換進度：' + progress + '%');
             }).then((ids) => {
                 ids.forEach(element => {
                     if (element.status === 'fulfilled') {
@@ -206,7 +208,6 @@ class Spotify {
         })
     }
 }
-
 class Kkbox {
     static songNameArray = [];
     static getSongs = () => {
@@ -266,15 +267,14 @@ const requestServerCall = (url) => {
         console.log(streamingMediaClass.songNameArray.length);
     };
     const songNames = streamingMediaClass.songNameArray.splice(0, 70);
-
+    showInfo('準備轉換...');
     const serverArray = await YoutubeInstances.getServer();
     const u2Ins = new YoutubeInstances(serverArray);
-
     const target = await u2Ins.getSongFromInstances(songNames)
     await requestServerCall(target)
     await delay(500);
-    u2Ins.removeInfo();
+    removeInfo();
     window.location.href = target;
-    await delay(500);
+    await delay(1000);
     window.open(target)
 })()
