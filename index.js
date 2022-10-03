@@ -74,7 +74,7 @@ class YoutubeInstances {
     getYoutubeId(query) {
         return new Promise(async (resolve, reject) => {
             try {
-                const apiUrl = `${this.getRandItemFromArray(this.serverArray)}/api/v1/search/?q=${encodeURI(query)}&page=1&date=none&type=music&duration=none&sort=relevance`
+                const apiUrl = `${this.getRandItemFromArray(this.serverArray)}/api/v1/search/?q=${encodeURI(query+' official')}&page=1&date=none&type=music&duration=none&sort=relevance`
                 const searchedArray = await getJson(apiUrl)
                 if (searchedArray && searchedArray.length > 0 && searchedArray[0].videoId) {
                     const _id = searchedArray[0].videoId;
